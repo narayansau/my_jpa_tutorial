@@ -26,11 +26,48 @@ public class ProductAPI{
 
     @PostMapping
     public ResponseEntity create(@Valid  @RequestBody Product product ) {
-        return  ResponseEntity.ok( productService.save( product ) );
+        return
+                ResponseEntity.
+                        ok( productService.save( product ) );
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity <Optional <Product>> findById(@PathVariable Long id) {
-        return ResponseEntity.ok( productService.findById( id ) );
+    public ResponseEntity<Product>
+               findById(@PathVariable Long id) {
+        Optional<Product> stock =
+                productService.findById(id);
+        if (!stock.isPresent()) {
+
+           // log.error("id " + id + " is not exist" ) ;
+            ResponseEntity.badRequest().build();
+
+        }
+
+
+
+        return ResponseEntity.ok(stock.get() );
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Product> update (
+            @PathVariable Long id , @Valid @RequestBody
+            Product product) {
+        if ( ! productService.findById(id).isPresent()) {
+            // log.error("id " + id + " is not exist" ) ;
+            ResponseEntity.badRequest().build();
+
+        }
+        return ResponseEntity.ok(productService.save(product));
+    }
+@DeleteMapping("/{id}")
+    public ResponseEntity delete (
+            @PathVariable Long id) {
+    if ( ! productService.findById(id).isPresent()) {
+        // log.error("id " + id + " is not exist" ) ;
+        ResponseEntity.badRequest().build();
+
+    }
+    productService.deleteById(id);
+    return ResponseEntity.ok().build();
     }
 }
